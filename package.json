@@ -20,15 +20,15 @@
     "daggy": "0.0.x",
     "fantasy-combinators": "0.0.x",
     "fantasy-eithers": "0.0.x",
-    "fantasy-lenses": "0.0.x"
+    "fantasy-lenses": "0.0.x",
+    "fantasy-helpers": "0.0.x"
   },
   "devDependencies": {
     "grunt-cli": "0.1.9",
     "grunt": "0.4.x",
     "grunt-contrib-jshint": "0.6.x",
     "grunt-contrib-nodeunit": "0.2.0",
-    "fantasy-check": "0.1.6",
-    "fantasy-helpers": "0.0.x"
+    "fantasy-check": "0.1.6"
   },
   "scripts": {
       "readme": "$(npm bin)/emu < src/identity.js > README.md",
