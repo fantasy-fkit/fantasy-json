@@ -5,18 +5,24 @@ var λ = require('fantasy-check/src/adapters/nodeunit'),
 
     helpers = require('fantasy-helpers'),
     combinators = require('fantasy-combinators'),
-    Identity = require('../fantasy-identities');
+    Json = require('../fantasy-json'),
+
+    identity = combinators.identity;
+
+function run(a) {
+    return a.x;
+}
 
 exports.json = {
 
     // Functor tests
-    'All (Functor)': functor.laws(λ)(Json.of, identity),
-    'Identity (Functor)': functor.identity(λ)(Json.of, identity),
-    'Composition (Functor)': functor.composition(λ)(Json.of, identity),
+    'All (Functor)': functor.laws(λ)(Json.of, run),
+    'Identity (Functor)': functor.identity(λ)(Json.of, run),
+    'Composition (Functor)': functor.composition(λ)(Json.of, run),
 
     // Monad tests
-    'All (Monad)': monad.laws(λ)(Json, identity),
-    'Left Identity (Monad)': monad.leftIdentity(λ)(Json, identity),
-    'Right Identity (Monad)': monad.rightIdentity(λ)(Json, identity),
-    'Associativity (Monad)': monad.associativity(λ)(Json, identity)
+    'All (Monad)': monad.laws(λ)(Json, run),
+    'Left Identity (Monad)': monad.leftIdentity(λ)(Json, run),
+    'Right Identity (Monad)': monad.rightIdentity(λ)(Json, run),
+    'Associativity (Monad)': monad.associativity(λ)(Json, run)
 };

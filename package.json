@@ -11,7 +11,7 @@
     "identity",
     "monad"
   ],
-  "author": "Brian McKenna",
+  "author": "Simon Richardson",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fantasyland/fantasy-json/issues"
@@ -20,7 +20,7 @@
     "daggy": "0.0.x",
     "fantasy-combinators": "0.0.x",
     "fantasy-eithers": "0.0.x",
-    "fantasy-lenses": "0.0.x",
+    "fantasy-lenses": "0.0.x"
   },
   "devDependencies": {
     "grunt-cli": "0.1.9",

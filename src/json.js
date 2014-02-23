@@ -5,7 +5,7 @@ var daggy = require('daggy'),
 
 // Methods
 Json.of = function(x) {
-    return Json(Either.Left(x));
+    return Json(Either.Right(x));
 };
 Json.prototype.chain = function(f) {
     return Json(this.x.chain(function(x) {
@@ -14,7 +14,7 @@ Json.prototype.chain = function(f) {
 };
 
 // Derived
-Json.prototype.map = function(v) {
+Json.prototype.map = function(f) {
     return this.chain(function(a) {
         return Json.of(f(a));
     });
@@ -23,8 +23,13 @@ Json.prototype.map = function(v) {
 // 
 Json.fromString = function(x) {
     try {
-        return Json(Either.Left(JSON.Parse(x)));
+        str = (x instanceof String) ? x : JSON.stringify(x);
+        return Json(Either.Left(JSON.parse(str)));
     } catch(e) {
         return Json(Either.Right([e]));
     }
 };
+
+// Export
+if(typeof module != 'undefined')
+    module.exports = Json;
