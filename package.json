@@ -21,7 +21,8 @@
     "fantasy-combinators": "0.0.x",
     "fantasy-eithers": "0.0.x",
     "fantasy-lenses": "0.0.x",
-    "fantasy-helpers": "0.0.x"
+    "fantasy-helpers": "0.0.x",
+    "fantasy-options": "0.0.x"
   },
   "devDependencies": {
     "grunt-cli": "0.1.9",
@@ -31,7 +32,7 @@
     "fantasy-check": "0.1.6"
   },
   "scripts": {
-      "readme": "$(npm bin)/emu < src/identity.js > README.md",
+      "readme": "$(npm bin)/emu < src/json.js > README.md",
       "test": "grunt"
   },
   "files": [

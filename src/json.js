@@ -1,6 +1,7 @@
 var daggy = require('daggy'),
     helpers = require('fantasy-helpers'),
     Either = require('fantasy-eithers'),
+    Option = require('fantasy-options'),
     PartialLens = require('fantasy-lenses'),
 
     Json = daggy.tagged('x');
@@ -43,7 +44,7 @@ Json.prototype.writeProp = function(k, v) {
             function() {
                 return Either.Left([new Error("No valid property for key (" + k + ")")]);
             }
-        )
+        );
     });
 };
 
@@ -71,6 +72,12 @@ Json.prototype.readAsObject = function() {
 };
 
 // Static
+Json.prototype.toString = function() {
+    return this.x.fold(
+        Option.None,
+        Option.Some
+    );
+};
 Json.fromString = function(x) {
     try {
         str = (x instanceof String) ? x : JSON.stringify(x);
