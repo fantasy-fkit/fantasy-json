@@ -23,8 +23,8 @@ Json.prototype.map = function(f) {
 };
 Json.prototype.readProp = function(k) {
     return this.map(function(a) {
-        b = PartialLens.objectLens(k).run(a).get();
-        return b.fold(
+        var value = PartialLens.objectLens(k).run(a).get();
+        return value.fold(
             Either.Right,
             function() {
                 return Either.Left([new Error("No valid property for key (" + k + ")")]);
@@ -32,22 +32,42 @@ Json.prototype.readProp = function(k) {
         );
     });
 };
-Json.prototype.readPrimType = function(type) {
+Json.prototype.writeProp = function(k, v) {
+    return this.map(function(a) {
+        var lens = PartialLens.objectLens(k).run(a),
+            value = lens.get();
+        return value.fold(
+            function(b) {
+                return Either.Right(lens.set(v));
+            },
+            function() {
+                return Either.Left([new Error("No valid property for key (" + k + ")")]);
+            }
+        )
+    });
+};
+
+Json.prototype.readAsType = function(type) {
     return this.map(function(a) {
         return type(a) ?
             Either.Right(a) :
             Either.Left([new Error("Value is not of correct type.")]);
     });
 };
-
-Json.prototype.readBoolean = function() {
-    return this.readPrimType(helpers.isBoolean);
+Json.prototype.readAsBoolean = function() {
+    return this.readAsType(helpers.isBoolean);
 };
-Json.prototype.readString = function() {
-    return this.readPrimType(helpers.isString);
+Json.prototype.readAsString = function() {
+    return this.readAsType(helpers.isString);
 };
-Json.prototype.readNumber = function() {
-    return this.readPrimType(helpers.isNumber);
+Json.prototype.readAsNumber = function() {
+    return this.readAsType(helpers.isNumber);
+};
+Json.prototype.readAsArray = function() {
+    return this.readAsType(helpers.isArray);
+};
+Json.prototype.readAsObject = function() {
+    return this.readAsType(helpers.isObject);
 };
 
 // Static
