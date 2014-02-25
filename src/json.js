@@ -52,10 +52,10 @@ Json.prototype.writeProp = function(k, v) {
 };
 
 Json.prototype.readAsType = function(type) {
-    return this.map(function(a) {
+    return this.chain(function(a) {
         return type(a) ?
-            Either.Right(a) :
-            Either.Left([new Error("Value is not of correct type.")]);
+            Json(Either.Right(a)) :
+            Json(Either.Left([new Error("Value is not of correct type.")]));
     });
 };
 Json.prototype.readAsBoolean = function() {

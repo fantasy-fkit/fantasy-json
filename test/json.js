@@ -51,7 +51,7 @@ exports.json = {
             b: Object
         })]
     ),
-    'when using readProp to alter value should return correct object': λ.check(
+    'when using readProp to alter value should not return correct object': λ.check(
         function(a) {
             var x = Json.of(a.a),
                 y = Json.of(a).readProp('v');
@@ -87,6 +87,51 @@ exports.json = {
         },
         [λ.objectLike({
             a: Number,
+            b: Object
+        })]
+    ),
+    'when using readAsBoolean should return correct value': λ.check(
+        function(a) {
+            return equality.equals(Json.of(a).readProp('a').readAsBoolean().x.r, a.a);
+        },
+        [λ.objectLike({
+            a: Boolean,
+            b: Object
+        })]
+    ),
+    'when using readAsString should return correct value': λ.check(
+        function(a) {
+            return equality.equals(Json.of(a).readProp('a').readAsString().x.r, a.a);
+        },
+        [λ.objectLike({
+            a: String,
+            b: Object
+        })]
+    ),
+    'when using readAsNumber should return correct value': λ.check(
+        function(a) {
+            return equality.equals(Json.of(a).readProp('a').readAsNumber().x.r, a.a);
+        },
+        [λ.objectLike({
+            a: Number,
+            b: Object
+        })]
+    ),
+    'when using readAsArray should return correct value': λ.check(
+        function(a) {
+            return equality.equals(Json.of(a).readProp('a').readAsArray().x.r, a.a);
+        },
+        [λ.objectLike({
+            a: Array,
+            b: Object
+        })]
+    ),
+    'when using readAsObject should return correct value': λ.check(
+        function(a) {
+            return equality.equals(Json.of(a).readProp('a').readAsObject().x.r, a.a);
+        },
+        [λ.objectLike({
+            a: Object,
             b: Object
         })]
     )
