@@ -1,8 +1,10 @@
 var daggy = require('daggy'),
     helpers = require('fantasy-helpers'),
+    lens = require('fantasy-lenses'),
     Either = require('fantasy-eithers'),
     Option = require('fantasy-options'),
-    PartialLens = require('fantasy-lenses'),
+    
+    PartialLens = lens.PartialLens,
 
     Json = daggy.tagged('x');
 
@@ -23,26 +25,27 @@ Json.prototype.map = function(f) {
     });
 };
 Json.prototype.readProp = function(k) {
-    return this.map(function(a) {
-        var value = PartialLens.objectLens(k).run(a).get();
-        return value.fold(
-            Either.Right,
+    return this.chain(function(a) {
+        var lens = PartialLens.objectLens(k).run(a);
+        return lens.fold(
+            function(b) {
+                return Json(Either.Right(b.get()));
+            },
             function() {
-                return Either.Left([new Error("No valid property for key (" + k + ")")]);
+                return Json(Either.Left([new Error("No valid property for key (" + k + ")")]));
             }
         );
     });
 };
 Json.prototype.writeProp = function(k, v) {
-    return this.map(function(a) {
-        var lens = PartialLens.objectLens(k).run(a),
-            value = lens.get();
-        return value.fold(
+    return this.chain(function(a) {
+        var lens = PartialLens.objectLens(k).run(a);
+        return lens.fold(
             function(b) {
-                return Either.Right(lens.set(v));
+                return Json(Either.Right(b.set(v)));
             },
             function() {
-                return Either.Left([new Error("No valid property for key (" + k + ")")]);
+                return Json(Either.Left([new Error("No valid property for key (" + k + ")")]));
             }
         );
     });
@@ -74,8 +77,10 @@ Json.prototype.readAsObject = function() {
 // Static
 Json.prototype.toString = function() {
     return this.x.fold(
-        Option.None,
-        Option.Some
+        combinators.constant(''),
+        function(x) {
+            return (x instanceof String) ? x : JSON.stringify(x);
+        }
     );
 };
 Json.fromString = function(x) {

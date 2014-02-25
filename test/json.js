@@ -5,6 +5,7 @@ var λ = require('fantasy-check/src/adapters/nodeunit'),
 
     helpers = require('fantasy-helpers'),
     combinators = require('fantasy-combinators'),
+    equality = require('fantasy-equality'),
     Json = require('../fantasy-json'),
 
     identity = combinators.identity;
@@ -24,5 +25,69 @@ exports.json = {
     'All (Monad)': monad.laws(λ)(Json, run),
     'Left Identity (Monad)': monad.leftIdentity(λ)(Json, run),
     'Right Identity (Monad)': monad.rightIdentity(λ)(Json, run),
-    'Associativity (Monad)': monad.associativity(λ)(Json, run)
+    'Associativity (Monad)': monad.associativity(λ)(Json, run),
+
+    // Manual tests
+    'when using fromString should be the same as of': λ.check(
+        function(a) {
+            var x = Json.fromString(JSON.stringify(a)),
+                y = Json.of(a);
+            return equality.equals(x, y);
+        },
+        [λ.objectLike({
+            a: Number,
+            b: Object
+        })]
+    ),
+    'when using readProp to alter value should return correct object': λ.check(
+        function(a) {
+            var x = Json.of(a.a),
+                y = Json.of(a).readProp('a');
+
+            return equality.equals(x.x, y.x);
+        },
+        [λ.objectLike({
+            a: Number,
+            b: Object
+        })]
+    ),
+    'when using readProp to alter value should return correct object': λ.check(
+        function(a) {
+            var x = Json.of(a.a),
+                y = Json.of(a).readProp('v');
+
+            return !equality.equals(x.x, y.x);
+        },
+        [λ.objectLike({
+            a: Number,
+            b: Object
+        })]
+    ),
+    'when using writeProp to alter value should return correct object': λ.check(
+        function(a) {
+            var x = Json.of(JSON.parse(JSON.stringify(a))),
+                y = Json.of(a).writeProp('a', a.a + 1);
+
+            // Mutate the state to test against!
+            x.x.r.a += 1;
+
+            return equality.equals(x.x, y.x);
+        },
+        [λ.objectLike({
+            a: Number,
+            b: Object
+        })]
+    ),
+    'when using writeProp to alter value should not return correct object': λ.check(
+        function(a) {
+            var x = Json.of(JSON.parse(JSON.stringify(a))),
+                y = Json.of(a).writeProp('v', a.a + 1);
+
+            return !equality.equals(x.x, y.x);
+        },
+        [λ.objectLike({
+            a: Number,
+            b: Object
+        })]
+    )
 };
