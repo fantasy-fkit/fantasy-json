@@ -71,7 +71,7 @@ Json.prototype.readAsObject = function() {
 
 // Common
 Json.prototype.end = function(f) {
-    return this.chain(compose(constant(Option.None)(f)));
+    return this.chain(compose(constant(Option.None))(f));
 };
 Json.prototype.toString = function() {
     return this.x.fold(
