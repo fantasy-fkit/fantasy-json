@@ -30,10 +30,10 @@ Json.prototype.read = function(k) {
         var store = pLens(k).run(a);
         return store.fold(
             function(b) {
-                return Option.from(b.get());
+                return Json(Option.from(b.get()));
             },
             function() {
-                return Option.None;
+                return Json(Option.None);
             }
         );
     });
