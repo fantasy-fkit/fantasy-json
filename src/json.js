@@ -30,17 +30,17 @@ Json.prototype.read = function(k) {
         var store = pLens(k).run(a);
         return store.fold(
             function(b) {
-                return Json(Option.from(b.get()));
+                return Option.from(b.get());
             },
             function() {
-                return Json(Option.None);
+                return Option.None;
             }
         );
     });
 };
 Json.prototype.write = function(k, v) {
     return this.chain(function(a) {
-        return Json(Option.from(lens(k).run(a).get()))
+        return Json(Option.from(lens(k).run(a).set(v)))
     });
 };
 
