@@ -1,17 +1,18 @@
 var daggy = require('daggy'),
     helpers = require('fantasy-helpers'),
-    lens = require('fantasy-lenses'),
-    Either = require('fantasy-eithers'),
-    Option = require('fantasy-options'),
+    pLens = require('fantasy-lenses').PartialLens.objectLens,
+    lens = require('fantasy-lenses').Lens.objectLens,
+    Option = require('fantasy-options').Option,
     
-    PartialLens = lens.PartialLens,
-
     Json = daggy.tagged('x');
 
 // Methods
 Json.of = function(x) {
-    return Json(Either.Right(x));
+    return Json(Option.from(x));
 };
+Json.empty = function(){
+    return Json(Option.None);
+}
 Json.prototype.chain = function(f) {
     return Json(this.x.chain(function(x) {
         return f(x).x;
@@ -24,30 +25,22 @@ Json.prototype.map = function(f) {
         return Json.of(f(a));
     });
 };
-Json.prototype.readProp = function(k) {
+Json.prototype.read = function(k) {
     return this.chain(function(a) {
-        var lens = PartialLens.objectLens(k).run(a);
-        return lens.fold(
+        var store = pLens(k).run(a);
+        return store.fold(
             function(b) {
-                return Json(Either.Right(b.get()));
+                return Json(Option.from(b.get()));
             },
             function() {
-                return Json(Either.Left([new Error("No valid property for key (" + k + ")")]));
+                return Json(Option.None);
             }
         );
     });
 };
-Json.prototype.writeProp = function(k, v) {
+Json.prototype.write = function(k, v) {
     return this.chain(function(a) {
-        var lens = PartialLens.objectLens(k).run(a);
-        return lens.fold(
-            function(b) {
-                return Json(Either.Right(b.set(v)));
-            },
-            function() {
-                return Json(Either.Left([new Error("No valid property for key (" + k + ")")]));
-            }
-        );
+        return Json(Option.from(lens.run(a)))
     });
 };
 
