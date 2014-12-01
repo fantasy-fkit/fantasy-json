@@ -11,7 +11,7 @@ Json.of = function(x) {
     return Json(Option.from(x));
 };
 Json.empty = function(){
-    return Json(Option.None);
+    return Json.of({});
 }
 Json.prototype.chain = function(f) {
     return Json(this.x.chain(function(x) {
