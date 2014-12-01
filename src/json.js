@@ -40,7 +40,7 @@ Json.prototype.read = function(k) {
 };
 Json.prototype.write = function(k, v) {
     return this.chain(function(a) {
-        return Json(Option.from(lens.run(a)))
+        return Json(Option.from(lens(k).run(a)))
     });
 };
 
