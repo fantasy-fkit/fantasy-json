@@ -1,5 +1,7 @@
 var daggy = require('daggy'),
     helpers = require('fantasy-helpers'),
+    compose = require('fantasy-combinators').compose;
+    constant = require('fantasy-combinators').constant;
     pLens = require('fantasy-lenses').PartialLens.objectLens,
     lens = require('fantasy-lenses').Lens.objectLens,
     Option = require('fantasy-options').Option,
@@ -67,7 +69,10 @@ Json.prototype.readAsObject = function() {
     return this.readAsType(helpers.isObject);
 };
 
-// Static
+// Common
+Json.prototype.end = function(f) {
+    return this.chain(compose(constant(Option.None)(f)));
+};
 Json.prototype.toString = function() {
     return this.x.fold(
         combinators.constant(''),
