@@ -14,7 +14,7 @@ Json.empty = function(){
     return Json.of({});
 }
 Json.prototype.chain = function(f) {
-    return Json.of(this.x.chain(function(x) {
+    return Json(this.x.chain(function(x) {
         return f(x).x;
     }));
 };
@@ -22,7 +22,7 @@ Json.prototype.chain = function(f) {
 // Derived
 Json.prototype.map = function(f) {
     return this.chain(function(a) {
-        return Json.of(f(a));
+        return Json(f(a));
     });
 };
 Json.prototype.read = function(k) {
