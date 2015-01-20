@@ -1,6 +1,6 @@
 {
   "name": "fantasy-json",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Monadic JSON manipulation",
   "repository": {
     "type": "git",
