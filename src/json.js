@@ -1,6 +1,7 @@
 var daggy = require('daggy'),
     helpers = require('fantasy-helpers'),
     compose = require('fantasy-combinators').compose;
+    identity = require('fantasy-combinators').identity;
     constant = require('fantasy-combinators').constant;
     pLens = require('fantasy-lenses').PartialLens.objectLens,
     lens = require('fantasy-lenses').Lens.objectLens,
@@ -40,11 +41,17 @@ Json.prototype.read = function(k) {
         );
     });
 };
+Json.prototype.readAp = function(o) {
+    return this.read(o.fold(identity, constant('')))
+};
 Json.prototype.write = function(k, v) {
     return this.chain(function(a) {
         return Json(Option.from(lens(k).run(a).set(v)))
     });
 };
+Json.prototype.writeAp = function(o, v) {
+    return this.write(o.fold(identity, constant('')), v);
+}
 
 Json.prototype.readAsType = function(type) {
     return this.chain(function(a) {
@@ -72,6 +79,9 @@ Json.prototype.readAsObject = function() {
 // Common
 Json.prototype.end = function(f) {
     return this.chain(compose(constant(Option.None))(f));
+};
+Json.prototype.extract = function() {
+    return this.x;
 };
 Json.prototype.toString = function() {
     return this.x.fold(
