@@ -80,6 +80,7 @@ Json.prototype.readAsObject = function() {
 Json.prototype.end = function(f) {
     return this.chain(compose(constant(Option.None))(f));
 };
+// Extract context value
 Json.prototype.extract = function() {
     return this.x;
 };
