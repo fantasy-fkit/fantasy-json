@@ -21,7 +21,9 @@ Json.prototype.chain = function(f) {
         return f(x).x;
     }));
 };
-
+Json.prototype.fold = function(f, g) {
+    return Json(this.x.fold(f, g))
+};
 // Derived
 Json.prototype.map = function(f) {
     return this.chain(function(a) {
