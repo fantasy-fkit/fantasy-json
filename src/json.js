@@ -1,108 +1,117 @@
 var daggy = require('daggy'),
     helpers = require('fantasy-helpers'),
-    compose = require('fantasy-combinators').compose;
-    identity = require('fantasy-combinators').identity;
-    constant = require('fantasy-combinators').constant;
-    pLens = require('fantasy-lenses').PartialLens.objectLens,
-    lens = require('fantasy-lenses').Lens.objectLens,
+    c = require('fantasy-combinators'),
+    lenses = require('fantasy-lenses'),
     Option = require('fantasy-options').Option,
-    
+    Either = require('fantasy-eithers'),
+
+    lens = lenses.Lens.objectLens,
+    pLens = lenses.PartialLens.objectLens,
+    compose = c.compose,
+    identity = c.identity,
+    constant = c.constant,
+
     Json = daggy.tagged('x');
 
 // Methods
-Json.of = function(x) {
-    return Json(Option.from(x));
+Json.of = function (x) { 
+    return Json(Option.Some(x));
 };
-Json.empty = function(){
+Json.empty = function () {
     return Json.of({});
-}
-Json.prototype.chain = function(f) {
-    return Json(this.x.chain(function(x) {
+};
+Json.prototype.chain = function (f) {
+    return Json(this.x.chain(function (x) {
         return f(x).x;
     }));
 };
-Json.prototype.fold = function(f, g) {
-    return Json(this.x.fold(f, g))
+Json.prototype.fold = function (f, g) {
+    return Json(this.x.fold(f, g));
 };
 // Derived
-Json.prototype.map = function(f) {
-    return this.chain(function(a) {
-        return Json(f(a));
+Json.prototype.map = function (f) {
+    return this.chain(function (a) {
+        return Json.of(f(a));
     });
 };
-Json.prototype.read = function(k) {
-    return this.chain(function(a) {
+Json.prototype.ap = function (a) {
+    return Json(this.x.chain(function(f) {
+        return a.x.map(f);
+    }));
+};
+Json.prototype.read = function (k) {
+    return this.chain(function (a) {
         var store = pLens(k).run(a);
         return store.fold(
-            function(b) {
+            function (b) {
                 return Json(Option.from(b.get()));
             },
-            function() {
+            function () {
                 return Json(Option.None);
             }
         );
     });
 };
-Json.prototype.readAp = function(o) {
-    return this.read(o.fold(identity, constant('')))
+Json.prototype.readAp = function (o) {
+    return this.read(o.fold(identity, constant('')));
 };
-Json.prototype.write = function(k, v) {
-    return this.chain(function(a) {
-        return Json(Option.from(lens(k).run(a).set(v)))
+Json.prototype.write = function (k, v) {
+    return this.chain(function (a) {
+        return Json(Option.from(lens(k).run(a).set(v)));
     });
 };
-Json.prototype.writeAp = function(o, v) {
+Json.prototype.writeAp = function (o, v) {
     return this.write(o.fold(identity, constant('')), v);
-}
+};
 
-Json.prototype.readAsType = function(type) {
-    return this.chain(function(a) {
+Json.prototype.readAsType = function (type) {
+    return this.chain(function (a) {
         return type(a) ?
-            Json(Either.Right(a)) :
-            Json(Either.Left([new Error("Value is not of correct type.")]));
+            Json(Option.of(a)) :
+            Json(Option.None);
     });
 };
-Json.prototype.readAsBoolean = function() {
+Json.prototype.readAsBoolean = function () {
     return this.readAsType(helpers.isBoolean);
 };
-Json.prototype.readAsString = function() {
+Json.prototype.readAsString = function () {
     return this.readAsType(helpers.isString);
 };
-Json.prototype.readAsNumber = function() {
+Json.prototype.readAsNumber = function () {
     return this.readAsType(helpers.isNumber);
 };
-Json.prototype.readAsArray = function() {
+Json.prototype.readAsArray = function () {
     return this.readAsType(helpers.isArray);
 };
-Json.prototype.readAsObject = function() {
+Json.prototype.readAsObject = function () {
     return this.readAsType(helpers.isObject);
 };
 
 // Common
-Json.prototype.end = function(f) {
+Json.prototype.end = function (f) {
     return this.chain(compose(constant(Option.None))(f));
 };
 // Extract context value
-Json.prototype.extract = function() {
+Json.prototype.extract = function () {
     return this.x;
 };
-Json.prototype.toString = function() {
+Json.prototype.toString = function () {
     return this.x.fold(
-        combinators.constant(''),
-        function(x) {
+        constant(''),
+        function (x) {
             return (x instanceof String) ? x : JSON.stringify(x);
         }
     );
 };
-Json.fromString = function(x) {
+Json.fromString = function (x) {
     try {
         str = (x instanceof String) ? x : JSON.stringify(x);
-        return Json(Either.Left(JSON.parse(str)));
-    } catch(e) {
-        return Json(Either.Right([e]));
+        return Json(Option.from(JSON.parse(str)));
+    } catch (e) {
+        return Json(Option.None);
     }
 };
 
 // Export
-if(typeof module != 'undefined')
+if (typeof module != 'undefined')
     module.exports = Json;
