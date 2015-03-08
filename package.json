@@ -20,9 +20,9 @@
     "daggy": "0.0.x",
     "fantasy-combinators": "0.0.x",
     "fantasy-eithers": "0.0.x",
-    "fantasy-lenses": "git://github.com/Laiff/fantasy-lenses.git",
+    "fantasy-lenses": "git://github.com/fantasy-fkit/fantasy-lenses.git",
     "fantasy-helpers": "0.0.x",
-    "fantasy-options": "git://github.com/Laiff/fantasy-options.git#v0.1.2"
+    "fantasy-options": "git://github.com/fantasy-fkit/fantasy-options.git#v0.1.4"
   },
   "devDependencies": {
     "grunt-cli": "0.1.9",
